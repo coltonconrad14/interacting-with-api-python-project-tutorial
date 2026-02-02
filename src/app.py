@@ -42,18 +42,24 @@ for track_obj, weight_obj in top_tracks:
     })
 
 df = pd.DataFrame(rows)
-df
+print("Top 10 Drake Tracks on Last.fm:")
+print(df.to_string())
+print("\n")
 
 df_sorted = df.sort_values("listeners", ascending=True)
+print("Bottom 3 tracks by listeners:")
 print(df_sorted.head(3))
+print("\n")
 
 df_clean = df.dropna(subset=["duration_min"]).copy()
 
-plt.figure()
-sns.scatterplot(data=df_clean, x="duration_min", y="listeners")
-plt.title(f"{artist_name}: Duration vs Listeners (Last.fm)")
-plt.xlabel("Duration (minutes)")
-plt.ylabel("Listeners")
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df_clean, x="duration_min", y="listeners", s=100)
+plt.title(f"{artist_name}: Duration vs Listeners (Last.fm)", fontsize=14, fontweight="bold")
+plt.xlabel("Duration (minutes)", fontsize=12)
+plt.ylabel("Listeners", fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
 plt.show()
 
 def get_top_tags(track_obj, max_tags=5):
@@ -68,14 +74,24 @@ df["top_tags"] = [
 
 df["n_tags"] = df["top_tags"].apply(len)
 
+print("Tracks with their top tags:")
+for idx, row in df.iterrows():
+    print(f"  {row['track_name']}: {', '.join(row['top_tags'])}")
+print("\n")
+
 tags_exploded = df[["track_name", "listeners", "top_tags"]].explode("top_tags")
 tag_counts = tags_exploded["top_tags"].value_counts()
-print(tag_counts.head(10))
+print("Top 15 most common track tags:")
+print(tag_counts.head(15))
+print("\n")
 
-plt.figure()
-tag_counts.head(10).plot(kind="bar")
-plt.title(f"{artist_name}: Most Common Track Tags (Top 10 Tracks)")
-plt.xlabel("Tag")
-plt.ylabel("Count")
+plt.figure(figsize=(12, 6))
+tag_counts.head(15).plot(kind="bar", color="steelblue")
+plt.title(f"{artist_name}: Most Common Track Tags (Top 10 Tracks)", fontsize=14, fontweight="bold")
+plt.xlabel("Tag", fontsize=12)
+plt.ylabel("Count", fontsize=12)
+plt.xticks(rotation=45, ha="right")
+plt.grid(True, alpha=0.3, axis="y")
+plt.tight_layout()
 plt.show()
 
